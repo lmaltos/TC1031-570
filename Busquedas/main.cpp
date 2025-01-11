@@ -1,11 +1,13 @@
 #include <iostream>
 #include <ctime>
-#define SIZE 100
+#define SIZE 100000
+#define MAX 500000
 using namespace std;
 
 int busquedaSecuencial(int [], int, int);
 int busquedaBinaria(int [], int, int);
 void ordenaInsercion(int [], int);
+void quickSort(int [], int);
 
 void print(int A[],int n) {
     for (int i = 0; i < n; i++) {
@@ -18,32 +20,46 @@ void print(int A[],int n) {
 
 int main() {
     //const int size = 100;
-    int A[SIZE];
+    int A[SIZE],B[SIZE];
     cout << "time: " << time(0) << endl;
     srand(time(0));
     // Llenamos arreglo
     for (int i = 0; i < SIZE; i++) {
-        A[i] = rand() % 500; // valores entre 0 y 499
+        A[i] = rand() % MAX; // valores entre 0 y 499
+        B[i] = A[i];
     }
-    // Ver arreglo
-    print(A,SIZE);
+    // Ver arreglo print(A,SIZE);
     // Ordenamos arreglo
-    cout << "Ordenando arreglo" << endl;
+    print(A,100);
+    cout << "Ordenando arreglo por insercion" << endl;
     ordenaInsercion(A,SIZE);
-    print(A,SIZE);
-    int clave = 0;
+    cout << "Arreglo ordenado" << endl;
+    print(A,100);
+    cout << "Ordenando arreglo por quickSort" << endl;
+    quickSort(B,SIZE);
+    cout << "Arreglo ordenado" << endl;
+    print(B,100);
+    //print(A,SIZE);
+    /*
     int pos = -1;
-    while (pos < 0) {
-        cout << "Valor a buscar: ";
-        cin >> clave;
+    int count = 0;
+    for (int clave = 0; clave < MAX; clave++) {
         pos = busquedaBinaria(A,SIZE,clave);
-        if (pos == -1) {
-            cout << "No se encontro el valor :" << clave << endl; 
-        }
-        else {
-            cout << "Se encontron el valor " << clave << " en la posicion: " << pos << endl;
+        if (pos > -1) {
+            count++;
         }
     }
+    cout << "Se encontraron: " << count << " numeros con busqueda binaria" << endl;
+    
+    count = 0;
+    for (int clave = 0; clave < MAX; clave++) {
+        pos = busquedaSecuencial(A,SIZE,clave);
+        if (pos > -1) {
+            count++;
+        }
+    }
+    cout << "Se encontraron: " << count << " numeros con busqueda secuencial" << endl;
+    */
     return 0;
 }
 
@@ -63,7 +79,7 @@ int busquedaBinaria(int A[], int n, int clave) {
     while (bajo <= alto) {
         central = (bajo + alto) / 2;
         valorCentral = A[central];
-        cout << "[" << bajo << ", " << central << ", " << alto << "]: " << valorCentral << endl;
+        //cout << "[" << bajo << ", " << central << ", " << alto << "]: " << valorCentral << endl;
         if (clave == valorCentral) {
             return central;
         }
@@ -90,4 +106,33 @@ void ordenaInsercion(int A[], int n) {
         }
         A[j] = aux;
     }
+}
+
+int quickSortParticion(int A[], int inicio, int fin) {
+    int aux;
+    int elemPivote = A[inicio];
+    int j = inicio;
+    for(int i = inicio+1; i <= fin; i++) {
+        if (A[i] < elemPivote) {
+            j++;
+            aux = A[j];
+            A[j] = A[i];
+            A[i] = aux;
+        }
+    }
+    A[inicio] = A[j];
+    A[j] = elemPivote;
+    return j;
+}
+
+void quickSortR(int A[], int inicio, int fin) {
+    if (inicio < fin) {
+        int pivote = quickSortParticion(A,inicio,fin);
+        quickSortR(A,inicio,pivote-1);
+        quickSortR(A,pivote+1,fin);
+    }
+} 
+
+void quickSort(int A[], int n) {
+    quickSortR(A,0,n-1);
 }
